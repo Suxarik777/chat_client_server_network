@@ -1,12 +1,10 @@
 import socket
 import threading
 
-
-
 LOCAL_HOST = "127.0.0.1"
 
 host = LOCAL_HOST
-port = 7777777
+port = 4444
 
 server_test = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_test.bind((host, port))
@@ -15,9 +13,11 @@ server_test.listen()
 clients_data = []
 nicks_data = []
 
+
 def broadcast(message):
     for client in clients_data:
         client.send(message)
+
 
 def handle(client):
     while True:
@@ -33,6 +33,7 @@ def handle(client):
             nicks_data.remove(nickname)
             break
 
+
 def accept_message():
     while True:
         client, address = server_test.accept()
@@ -46,6 +47,10 @@ def accept_message():
         print(f"Nickname is {nickname}")
         broadcast(f"{nickname} joined!".encode('ascii'))
         client.send('Connected to server!'.encode('ascii'))
+
+        thread = threading.Thread(target=handle, args=(client,))
+        thread.start()
+
 
 print("Server if listening...")
 accept_message()
